@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.5,
+          width: MediaQuery.of(context).size.width * 0.8,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -54,29 +54,28 @@ class _MyHomePageState extends State<MyHomePage> {
               // ----------------------------------------------
               // URL UP FIELD
               // ----------------------------------------------
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      margin: const EdgeInsets.only(),
-                      child: TextFormField(
-                        controller: _urlController,
-                        decoration: const InputDecoration(
-                          labelText: 'URL UP',
-                          labelStyle: TextStyle(
-                            color: Colors.blueGrey,
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.blueGrey,
-                            ),
-                          ),
-                        ),
-                        onChanged: (value) {},
+              Container(
+                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.only(),
+                child: TextFormField(
+                  controller: _urlController,
+                  decoration: const InputDecoration(
+                    labelText: 'URL',
+                    labelStyle: TextStyle(
+                      color: Colors.blueGrey,
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.blueGrey,
                       ),
                     ),
                   ),
+                  onChanged: (value) {},
+                ),
+              ),
+              Row(
+                children: [
+                  
                   ElevatedButton(
                     onPressed: () {
                       postDataService(_urlController.text, "1");
@@ -121,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           vertical: 12,
                         ),
                         elevation: 0,
-                        backgroundColor: Colors.yellow),
+                        backgroundColor: Colors.orange),
                     child: const Icon(
                       Icons.pause,
                       color: Colors.white,
@@ -138,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           vertical: 12,
                         ),
                         elevation: 0,
-                        backgroundColor: Colors.red),
+                        backgroundColor: Colors.red.shade600),
                     child: const Icon(
                       Icons.stop,
                       color: Colors.white,
