@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:toastification/toastification.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-import 'home_page.dart';
+import 'app.dart';
+import 'services/locator.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await setupServiceLocator();
+  await initializeDateFormatting('id', null);
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  // Set fullscreen mode
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
 
-  @override
-  Widget build(BuildContext context) {
-    return ToastificationWrapper(
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        home: const MyHomePage(title: 'Flutter Demo Home Page'),
-        // home: const HomeEmptyView(),
-      ),
-    );
-  }
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  runApp(MyApp());
 }
