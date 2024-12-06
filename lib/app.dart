@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
-import 'viewmodels/auth_provider.dart';
 import 'package:provider/provider.dart';
+
 import 'services/locator.dart';
 import 'viewmodels/Nfc_scanner_provider.dart';
+import 'viewmodels/auth_provider.dart';
+import 'viewmodels/cargolift_detail_provider.dart';
+import 'viewmodels/cargolift_list_provider.dart';
 import 'viewmodels/clock_provider.dart';
 
 class MyApp extends StatelessWidget {
@@ -22,6 +25,8 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(create: (_) => NFCProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => LiftCargoListProvider()),
+        ChangeNotifierProvider(create: (_) => LiftCargoDetailProvider()),
       ],
       child: MaterialApp.router(
 

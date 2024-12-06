@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import '../../../constants/app_assets.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_styles.dart';
+
 import '../../../viewmodels/clock_provider.dart';
 import '../../../widgets/custom_container_button.dart';
 
@@ -85,8 +86,13 @@ class _LoginviewState extends State<Loginview> {
             if (event.logicalKey == LogicalKeyboardKey.enter) {
               // Proses data NFC yang sudah selesai
               provider.processScannedData(
-                (scannedCard) {
-                  context.read<AuthProvider>().loginWithCard(scannedCard);
+                (scannedCard) async {
+                  if (scannedCard.isNotEmpty ) {
+                    await context
+                        .read<AuthProvider>()
+                        .loginWithCard(scannedCard);
+                    
+                  }
                 },
               );
             }

@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const String _kTokenLoginAuth = 'token_login_auth';
 const String _kUserData = 'user_data';
+const String _kLiftSelected = 'lift_selected';
 
 class SharedPreferencesServices {
   static SharedPreferencesServices? _instance;
@@ -19,7 +20,7 @@ class SharedPreferencesServices {
     return _instance!;
   }
 
-  /// claer all data saved to cache 
+  /// claer all data saved to cache
   Future<bool> clearAll() async {
     bool? isClear = await _preferences?.clear();
     return isClear ?? false;
@@ -64,10 +65,14 @@ class SharedPreferencesServices {
   void saveToken(String value) => _saveData(_kTokenLoginAuth, value);
 
   // ----------------------------------------------
-  // get and save badge usser
+  // get and save usser
   // ----------------------------------------------
   String get readUser => _getData(_kUserData) ?? "";
   void saveUser(String value) => _saveData(_kUserData, value);
 
-  
+  // ----------------------------------------------
+  // get and save usser
+  // ----------------------------------------------
+  String get readSelectedLift => _getData(_kLiftSelected) ?? "";
+  void saveLiftSelected(String value) => _saveData(_kLiftSelected, value);
 }

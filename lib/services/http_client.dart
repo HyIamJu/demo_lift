@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+
 import '../constants/app_configs.dart';
 // import '../shared/navigator_keys.dart';
 import '../views/dialogs/app_dialog.dart';
@@ -28,6 +29,7 @@ class HttpClient {
       BaseOptions(
         connectTimeout: requestTimeOut,
         baseUrl: AppConfigs.baseUrl,
+        
       ),
     );
 

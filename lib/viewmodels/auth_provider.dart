@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../constants/app_route_const.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
@@ -19,7 +20,7 @@ class AuthProvider extends ChangeNotifier {
   final _service = serviceLocator<AuthService>();
   final _sharedPref = serviceLocator<SharedPreferencesServices>();
 
-  void loginWithCard(String idCard) async {
+  Future<void> loginWithCard(String idCard) async {
     AppDialog.dialogLoadingCircle();
     if (!state.isLoading) {
       state = state.loading;

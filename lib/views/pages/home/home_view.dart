@@ -8,6 +8,8 @@ import '../../../constants/app_assets.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_sizes.dart';
 import '../../../constants/app_styles.dart';
+import '../../../viewmodels/cargolift_detail_provider.dart';
+import '../../../viewmodels/cargolift_list_provider.dart';
 import '../../../viewmodels/clock_provider.dart';
 import '../../../widgets/custom_container_button.dart';
 import '../../dialogs/menu_dialog_settings.dart';
@@ -29,6 +31,11 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<LiftCargoDetailProvider>().getDetailLift();
+      context.read<LiftCargoListProvider>().getListCargoLift();
+    });
     _focusNode.requestFocus();
   }
 
@@ -87,8 +94,6 @@ class _HomeViewState extends State<HomeView> {
             );
           }),
           const Spacer(),
-          
-          
           CustomContainerButton(
             iconPath: SvgPicture.asset(AppIcons.icHistory),
             text: 'History',

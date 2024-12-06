@@ -3,10 +3,12 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../repositories/auth_repository.dart';
+import '../repositories/lift_cargo_repository.dart';
 import '../router/app_router.dart';
 import '../services/http_client.dart';
 import '../services/shared_pref_services.dart';
 import 'auth_service.dart';
+import 'lift_cargo_service.dart';
 
 final serviceLocator = GetIt.instance;
 
@@ -41,7 +43,7 @@ Future<void> setupServiceLocator() async {
   serviceLocator.registerSingleton<AuthRepository>(AuthRepository(serviceLocator()));
   serviceLocator.registerSingleton<AuthService>(AuthService(serviceLocator()));
 
-  // register meeting service
-  // serviceLocator.registerSingleton<MeetingRepository>(MeetingRepository(serviceLocator()));
-  // serviceLocator.registerSingleton<MeetingServices>(MeetingServices(serviceLocator()));
+  // register cargo lift service
+  serviceLocator.registerSingleton<LiftCargoRepository>(LiftCargoRepository(serviceLocator()));
+  serviceLocator.registerSingleton<LiftCargoService>(LiftCargoService(serviceLocator()));
 }

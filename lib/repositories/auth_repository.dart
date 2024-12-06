@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+
 import '../constants/typedef_app.dart';
 import '../services/http_client.dart';
 import '../shared/network/error_handler.dart';
