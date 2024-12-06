@@ -11,6 +11,7 @@ class LiftCargoService {
     return await liftCargoRepository.cargoLiftDetail(cargoLiftUuid);
   }
 
+
   ResultFuture<List<LiftCargoModel>> cargoLiftList() async {
     return await liftCargoRepository.cargoLiftList();
   }
