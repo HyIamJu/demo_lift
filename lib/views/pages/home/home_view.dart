@@ -9,10 +9,8 @@ import '../../../constants/app_colors.dart';
 import '../../../constants/app_sizes.dart';
 import '../../../constants/app_styles.dart';
 import '../../../viewmodels/cargolift_detail_provider.dart';
-import '../../../viewmodels/cargolift_list_provider.dart';
 import '../../../viewmodels/clock_provider.dart';
 import '../../../widgets/custom_container_button.dart';
-import '../../dialogs/menu_dialog_settings.dart';
 import 'sections/home_button_section_view.dart';
 import 'sections/home_detail_information_view.dart';
 
@@ -34,7 +32,6 @@ class _HomeViewState extends State<HomeView> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<LiftCargoDetailProvider>().getDetailLift();
-      context.read<LiftCargoListProvider>().getListCargoLift();
     });
     _focusNode.requestFocus();
   }
@@ -67,12 +64,7 @@ class _HomeViewState extends State<HomeView> {
             // BUTTON LIFT CARGO
             // ----------------------------------------------
             HomeButtonSectionView(
-              flex: 2,
-              onLiftStatusChanged: (String newStatus) {
-                setState(() {
-                  liftStatus = newStatus;
-                });
-              },
+              
             ),
           ],
         ),
@@ -101,16 +93,8 @@ class _HomeViewState extends State<HomeView> {
               context.goNamed('history');
             },
           ),
-          const Gap(8),
-          CustomContainerButton(
-            iconPath: SvgPicture.asset(AppIcons.icSettings),
-            text: 'Settings',
-            onTap: () {
-              showDialog(
-                  context: context,
-                  builder: (context) => const MenuDialogSettings());
-            },
-          ),
+          
+          
           const Gap(8),
           CustomContainerButton(
             iconPath: SvgPicture.asset(AppIcons.icLogOut),

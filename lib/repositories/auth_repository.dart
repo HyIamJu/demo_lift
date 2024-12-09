@@ -13,9 +13,7 @@ class AuthRepository {
       final response = await httpClient.basicClient.post(
         '/cargoLift/loginCardNo',
         data: {
-          // 'card_no': cardId,
-          // 'secret_key': "a2ab5535-1076-466a-96e8-0d6865faa3e8", // uuid dari cargo nya
-          'card_no': "3700691047",
+          'card_no': cardId,
           'secret_key': cargoUuid, // uuid dari cargo nya
         },
       );

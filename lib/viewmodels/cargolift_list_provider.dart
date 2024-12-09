@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/lift_cargo_model.dart';
 import '../services/lift_cargo_service.dart';
 import '../services/locator.dart';
@@ -13,15 +14,19 @@ class LiftCargoListProvider extends ChangeNotifier {
 
   List<LiftCargoModel> listCargo = [];
   String groupValue = "Empty";
+  String nameLift = "";
   final _sharedPref = serviceLocator<SharedPreferencesServices>();
 
-  Future<void> getListCargoLift() async {
+  initializeLiftCargoList() {
     groupValue = _sharedPref.readSelectedLift;
+    nameLift = _sharedPref.readSelectedNameLift;
+    notifyListeners();
+  }
 
-    if (!state.isLoading) {
-      state = state.loading;
-      notifyListeners();
-    }
+  Future<void> getListCargoLift() async {
+    state = state.loading;
+    notifyListeners();
+
     final result = await _service.cargoLiftList();
 
     result.fold(
@@ -38,9 +43,11 @@ class LiftCargoListProvider extends ChangeNotifier {
     );
   }
 
-  set setGroupValue(String newValue) {
-    groupValue = newValue;
-    _sharedPref.saveLiftSelected(newValue);
+  void setGroupValue({required String uuid, required String name}) {
+    groupValue = uuid;
+    _sharedPref.saveLiftSelected(uuid);
+    nameLift = name;
+    _sharedPref.saveNameLiftSelected(name);
     notifyListeners();
   }
 }

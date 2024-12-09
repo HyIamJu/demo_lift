@@ -8,6 +8,7 @@ import '../../../../constants/app_colors.dart';
 import '../../../../constants/app_styles.dart';
 import '../../../../shared/utils/date_formating.dart';
 import '../../../../viewmodels/auth_provider.dart';
+import '../../../../widgets/custom_chached_image.dart';
 import '../../../../widgets/custom_row_list.dart';
 
 class HomeDetailInformationView extends StatelessWidget {
@@ -42,11 +43,11 @@ class HomeDetailInformationView extends StatelessWidget {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          data?.employeeImage ?? "",
-                          width: 180,
-                          height: 260,
-                          fit: BoxFit.cover,
+                        child: CustomCachedImage(
+                          url: data?.employeeImage ?? "",
+                          height: 250,
+                          width: 260,
+                          boxFit: BoxFit.cover,
                         ),
                       ),
                       const Gap(16),

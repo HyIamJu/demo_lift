@@ -8,39 +8,33 @@ import 'locator.dart';
 import 'shared_pref_services.dart';
 
 final _sharedPrefService = serviceLocator<SharedPreferencesServices>();
+
 // final _authService = serviceLocator<AuthService>();
 
 class HttpClient {
   HttpClient._internal();
   static final _singleton = HttpClient._internal();
   factory HttpClient() => _singleton;
+  static const requestTimeOut = Duration(seconds: 15);
 
   final authClient = createDioAuth();
-
-  final basicClient = createBasicDio();
-  static const requestTimeOut = Duration(seconds: 15);
+  final basicClient = createBasicDio(AppConfigs.baseUrl);
+  final localClient = createBasicDio(AppConfigs.baseUrlLocal);
 
   Future<String> getBadge() async {
     return _sharedPrefService.readUser;
   }
 
-  static Dio createBasicDio() {
+  static Dio createBasicDio(String baseUrl) {
     var dio = Dio(
       BaseOptions(
         connectTimeout: requestTimeOut,
-        baseUrl: AppConfigs.baseUrl,
-        
+        baseUrl: baseUrl,
       ),
     );
 
     dio.interceptors.addAll({
-      PrettyDioLogger(
-        requestHeader: true,
-        requestBody: true,
-        responseHeader: true,
-        compact: true,
-        responseBody: true,
-      ),
+      _dioLoggerInterceptor,
     });
 
     return dio;
@@ -52,16 +46,7 @@ class HttpClient {
       baseUrl: AppConfigs.baseUrl,
     ));
 
-    dio.interceptors.addAll({
-      AuthInterceptor(dio),
-      PrettyDioLogger(
-        requestHeader: true,
-        requestBody: true,
-        responseHeader: true,
-        compact: true,
-        responseBody: true,
-      ),
-    });
+    dio.interceptors.addAll({AuthInterceptor(dio), _dioLoggerInterceptor});
     return dio;
   }
 }
@@ -186,3 +171,11 @@ class AuthInterceptor extends Interceptor {
     return true;
   }
 }
+
+final _dioLoggerInterceptor = PrettyDioLogger(
+  requestHeader: true,
+  requestBody: true,
+  responseHeader: true,
+  compact: true,
+  responseBody: true,
+);

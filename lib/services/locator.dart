@@ -2,12 +2,15 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../constants/app_configs.dart';
 import '../repositories/auth_repository.dart';
+import '../repositories/lift_action_repository.dart';
 import '../repositories/lift_cargo_repository.dart';
 import '../router/app_router.dart';
 import '../services/http_client.dart';
 import '../services/shared_pref_services.dart';
 import 'auth_service.dart';
+import 'lift_action_services.dart';
 import 'lift_cargo_service.dart';
 
 final serviceLocator = GetIt.instance;
@@ -19,6 +22,7 @@ final serviceLocator = GetIt.instance;
 class GetItInstanceName {
   static const String basicClient = 'basicClient';
   static const String authClient = 'authClient';
+  static const String localClient = 'localClient';
 }
 
 // ----------------------------------------------
@@ -32,7 +36,8 @@ Future<void> setupServiceLocator() async {
   serviceLocator.registerSingleton<HttpClient>(HttpClient());
 
   // Register Dio instances
-  serviceLocator.registerSingleton<Dio>(HttpClient.createBasicDio(), instanceName: GetItInstanceName.basicClient);
+  serviceLocator.registerSingleton<Dio>(HttpClient.createBasicDio(AppConfigs.baseUrlLocal), instanceName: GetItInstanceName.localClient);
+  serviceLocator.registerSingleton<Dio>(HttpClient.createBasicDio(AppConfigs.baseUrl), instanceName: GetItInstanceName.basicClient);
   serviceLocator.registerSingleton<Dio>(HttpClient.createDioAuth(), instanceName: GetItInstanceName.authClient);
 
   // Register GoRouter instance
@@ -46,4 +51,8 @@ Future<void> setupServiceLocator() async {
   // register cargo lift service
   serviceLocator.registerSingleton<LiftCargoRepository>(LiftCargoRepository(serviceLocator()));
   serviceLocator.registerSingleton<LiftCargoService>(LiftCargoService(serviceLocator()));
+
+  // cargo lift action service
+  serviceLocator.registerSingleton<LiftActionRepository>(LiftActionRepository(serviceLocator()));
+  serviceLocator.registerSingleton<LiftActionServices>(LiftActionServices(serviceLocator()));
 }

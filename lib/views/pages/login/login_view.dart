@@ -4,15 +4,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import '../../../viewmodels/Nfc_scanner_provider.dart';
-import '../../../viewmodels/auth_provider.dart';
 import 'package:provider/provider.dart';
+
 import '../../../constants/app_assets.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_styles.dart';
-
+import '../../../viewmodels/Nfc_scanner_provider.dart';
+import '../../../viewmodels/auth_provider.dart';
+import '../../../viewmodels/cargolift_list_provider.dart';
 import '../../../viewmodels/clock_provider.dart';
 import '../../../widgets/custom_container_button.dart';
+import '../../dialogs/menu_dialog_settings.dart';
 
 class Loginview extends StatefulWidget {
   const Loginview({super.key});
@@ -31,8 +33,8 @@ class _LoginviewState extends State<Loginview> {
     // Fokuskan pada widget saat halaman ditampilkan
     WidgetsBinding.instance.addPostFrameCallback((_) {
       nfcProv.resetScannedData();
-
       FocusScope.of(context).requestFocus(_focusNode);
+      context.read<LiftCargoListProvider>().getListCargoLift();
     });
   }
 
@@ -87,11 +89,10 @@ class _LoginviewState extends State<Loginview> {
               // Proses data NFC yang sudah selesai
               provider.processScannedData(
                 (scannedCard) async {
-                  if (scannedCard.isNotEmpty ) {
+                  if (scannedCard.isNotEmpty && scannedCard.length > 4) {
                     await context
                         .read<AuthProvider>()
                         .loginWithCard(scannedCard);
-                    
                   }
                 },
               );
@@ -104,6 +105,13 @@ class _LoginviewState extends State<Loginview> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Consumer<LiftCargoListProvider>(builder: (context, prov, _) {
+                return Text(
+                  prov.nameLift,
+                  style: AppStyles.title1SemiBold,
+                );
+              }),
+              const Gap(10),
               SvgPicture.asset(AppIcons.icYourBadge),
               const Text(
                 'Silahkan tap badge kamu disebelah layar!',
@@ -159,6 +167,16 @@ class _LoginviewState extends State<Loginview> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const Spacer(),
+          CustomContainerButton(
+            iconPath: SvgPicture.asset(AppIcons.icSettings),
+            text: 'Settings',
+            onTap: () {
+              showDialog(
+                  context: context,
+                  builder: (context) => const MenuDialogSettings());
+            },
+          ),
+          const Gap(8),
           CustomContainerButton(
             iconPath: SvgPicture.asset(AppIcons.icHistory),
             text: 'History',

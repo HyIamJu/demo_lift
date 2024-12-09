@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 const String _kTokenLoginAuth = 'token_login_auth';
 const String _kUserData = 'user_data';
 const String _kLiftSelected = 'lift_selected';
+const String _kLiftSelecteName = 'lift_selected_name';
 
 class SharedPreferencesServices {
   static SharedPreferencesServices? _instance;
@@ -74,5 +75,7 @@ class SharedPreferencesServices {
   // get and save usser
   // ----------------------------------------------
   String get readSelectedLift => _getData(_kLiftSelected) ?? "";
+  String get readSelectedNameLift => _getData(_kLiftSelecteName) ?? "";
   void saveLiftSelected(String value) => _saveData(_kLiftSelected, value);
+  void saveNameLiftSelected(String value) => _saveData(_kLiftSelecteName, value);
 }

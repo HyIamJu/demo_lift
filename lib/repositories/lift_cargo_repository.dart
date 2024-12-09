@@ -1,6 +1,8 @@
 import 'package:dartz/dartz.dart';
+
 import '../constants/app_configs.dart';
 import '../constants/typedef_app.dart';
+import '../models/lift_action_log.dart';
 import '../models/lift_cargo_detail_model.dart';
 import '../models/lift_cargo_model.dart';
 import '../services/http_client.dart';
@@ -48,6 +50,51 @@ class LiftCargoRepository {
       final detailLift = LiftCargoDetail.fromMap(response.data['DATA']);
       // Jika berhasil, return Right dengan data User
       return Right(detailLift);
+    } catch (e) {
+      // Tangani error jika terjadi masalah dengan API
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  ResultFuture<bool> cargoLiftAddLog(
+      {required String uuidCargo, required String indicator}) async {
+    try {
+      await httpClient.authClient.get(
+        '/cargoLift/ActionCargo',
+        queryParameters: {
+          "uuid_cargo": uuidCargo,
+          "indicator": indicator //UP, HOLD, DOWN
+        },
+      );
+
+      // Jika berhasil, return Right dengan data User
+      return const Right(true);
+    } catch (e) {
+      // Tangani error jika terjadi masalah dengan API
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  ResultFuture<List<LiftActionLog>> cargoLiftListHistory(
+      {required String uuidCargo}) async {
+    try {
+      final response = await httpClient.authClient.get(
+        '/cargoLift/cargoHistory',
+        queryParameters: {
+          "uuid_cargo": uuidCargo,
+        },
+      );
+
+      // Jika berhasil, return Right dengan data User
+      List<LiftActionLog> listActionCargo = response.data["DATA"] == null
+          ? []
+          : List<LiftActionLog>.from(
+              response.data["DATA"]!.map(
+                (x) => LiftActionLog.fromMap(x),
+              ),
+            );
+
+      return Right(listActionCargo);
     } catch (e) {
       // Tangani error jika terjadi masalah dengan API
       return Left(ErrorHandler.handle(e).failure);

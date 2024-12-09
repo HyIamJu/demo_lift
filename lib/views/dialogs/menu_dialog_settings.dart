@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import '../../shared/finite_state.dart';
 import 'package:provider/provider.dart';
+
 import '../../constants/app_colors.dart';
 import '../../constants/app_styles.dart';
 import '../../shared/extensions/context_extenstion.dart';
+import '../../shared/finite_state.dart';
 import '../../shared/network/generic_failure_message_widget.dart';
 import '../../shared/network/generic_loading_widget.dart';
 import '../../viewmodels/cargolift_list_provider.dart';
@@ -49,7 +50,8 @@ class MenuDialogSettings extends StatelessWidget {
                       ...prov.listCargo.map(
                         (value) => _buildRadioListTile(
                           context,
-                          title: "${value.cargoLiftName ?? ""} - ${value.floorName ?? ""} - ${value.cargoLiftCode ?? ""}",
+                          title:
+                              "${value.cargoLiftName ?? ""} - ${value.floorName ?? ""} - ${value.cargoLiftCode ?? ""}",
                           value: value.cargoLiftUuid ?? "",
                           providerList: prov,
                         ),
@@ -85,7 +87,7 @@ class MenuDialogSettings extends StatelessWidget {
       value: value,
       groupValue: providerList.groupValue,
       onChanged: (value) async {
-        providerList.setGroupValue = value ?? "";
+        providerList.setGroupValue(uuid: value ?? "", name: title);
         Navigator.pop(context);
 
         // await _showDialogTapBadge(context);
@@ -99,7 +101,7 @@ class MenuDialogSettings extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text('Setting', style: AppStyles.title2Medium),
+        const Text('Setting Current Lift', style: AppStyles.title2Medium),
         GestureDetector(
           onTap: () => Navigator.pop(context),
           child: const Icon(Icons.close),

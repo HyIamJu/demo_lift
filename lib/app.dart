@@ -6,8 +6,10 @@ import 'package:provider/provider.dart';
 import 'services/locator.dart';
 import 'viewmodels/Nfc_scanner_provider.dart';
 import 'viewmodels/auth_provider.dart';
+import 'viewmodels/cargolift_action_provider.dart';
 import 'viewmodels/cargolift_detail_provider.dart';
 import 'viewmodels/cargolift_list_provider.dart';
+import 'viewmodels/cargolift_logs_provider.dart';
 import 'viewmodels/clock_provider.dart';
 
 class MyApp extends StatelessWidget {
@@ -19,17 +21,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => ClockProvider()..startTimerClock(),
-          lazy: true,
-        ),
+        ChangeNotifierProvider(create: (_) => ClockProvider()..startTimerClock(), lazy: true),
         ChangeNotifierProvider(create: (_) => NFCProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => LiftCargoListProvider()),
+        ChangeNotifierProvider(create: (_) => LiftCargoListProvider()..initializeLiftCargoList()),
         ChangeNotifierProvider(create: (_) => LiftCargoDetailProvider()),
+        ChangeNotifierProvider(create: (_) => LiftActionProvider()),
+        ChangeNotifierProvider(create: (_) => CargoLiftLogsProvider()),
       ],
       child: MaterialApp.router(
-
         debugShowCheckedModeBanner: false,
         routeInformationParser: router.routeInformationParser,
         routerDelegate: router.routerDelegate,

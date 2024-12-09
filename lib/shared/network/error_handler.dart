@@ -151,7 +151,7 @@ extension DataSourceExtension on DataSource {
       case DataSource.NO_INTERNET_CONNECTION:
         return const APIFailure(
           statusCode: ResponseCode.NO_INTERNET_CONNECTION,
-          message: "No Internet Connection",
+          message: "Connection Error",
         );
       case DataSource.DEFAULT:
         return const APIFailure(

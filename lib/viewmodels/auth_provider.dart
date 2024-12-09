@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -20,7 +22,19 @@ class AuthProvider extends ChangeNotifier {
   final _service = serviceLocator<AuthService>();
   final _sharedPref = serviceLocator<SharedPreferencesServices>();
 
+  intializeAuthProvider() {
+    try {
+      String userCache = _sharedPref.readUser;
+      if (userCache.isNotEmpty) {
+        user = UserModel.fromMap(jsonDecode(userCache));
+      }
+    } catch (e) {
+      debugPrint("error load data usser");
+    }
+  }
+
   Future<void> loginWithCard(String idCard) async {
+    var uuid = _sharedPref.readSelectedLift;
     AppDialog.dialogLoadingCircle();
     if (!state.isLoading) {
       state = state.loading;
@@ -28,7 +42,7 @@ class AuthProvider extends ChangeNotifier {
     }
     final result = await _service.login(
       cardId: idCard,
-      cargoUuid: "a2ab5535-1076-466a-96e8-0d6865faa3e8",
+      cargoUuid: uuid,
     );
 
     result.fold(
