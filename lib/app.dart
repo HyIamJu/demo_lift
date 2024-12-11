@@ -4,13 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import 'services/locator.dart';
-import 'viewmodels/Nfc_scanner_provider.dart';
 import 'viewmodels/auth_provider.dart';
 import 'viewmodels/cargolift_action_provider.dart';
 import 'viewmodels/cargolift_detail_provider.dart';
 import 'viewmodels/cargolift_list_provider.dart';
 import 'viewmodels/cargolift_logs_provider.dart';
 import 'viewmodels/clock_provider.dart';
+import 'viewmodels/nfc_scanner_provider.dart';
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});

@@ -9,10 +9,10 @@ import 'package:provider/provider.dart';
 import '../../../constants/app_assets.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_styles.dart';
-import '../../../viewmodels/Nfc_scanner_provider.dart';
 import '../../../viewmodels/auth_provider.dart';
 import '../../../viewmodels/cargolift_list_provider.dart';
 import '../../../viewmodels/clock_provider.dart';
+import '../../../viewmodels/nfc_scanner_provider.dart';
 import '../../../widgets/custom_container_button.dart';
 import '../../dialogs/menu_dialog_settings.dart';
 
