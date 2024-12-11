@@ -92,7 +92,7 @@ class _LoginviewState extends State<Loginview> {
                   if (scannedCard.isNotEmpty && scannedCard.length > 4) {
                     await context
                         .read<AuthProvider>()
-                        .loginWithCard(scannedCard);
+                        .loginWithNavigation(scannedCard);
                   }
                 },
               );

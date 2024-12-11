@@ -4,55 +4,70 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../constants/app_assets.dart';
 import '../../../../constants/app_colors.dart';
 
-class ButtonActionLift extends StatelessWidget {
+class ButtonActionLift extends StatefulWidget {
   final String iconPath;
   final Color bgColor;
   final Color borderColor;
   final Color? iconColor;
   final void Function()? onTap;
+  final bool isHoldType;
 
-  ButtonActionLift({
+  const ButtonActionLift({
     super.key,
     this.onTap,
     this.bgColor = AppColors.backgroundGreen,
     this.borderColor = AppColors.greenLunatic,
     this.iconColor,
     this.iconPath = AppIcons.icUp,
+    this.isHoldType = false,
   });
-  
-  final ValueNotifier<bool> _isPressed = ValueNotifier(false);
+
+  @override
+  State<ButtonActionLift> createState() => _ButtonActionLiftState();
+}
+
+class _ButtonActionLiftState extends State<ButtonActionLift> {
+  final ValueNotifier<bool> _isHoldColor = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: GestureDetector(
-        onTapDown: (details) {
-          _isPressed.value = true;
-        },
-        onTapUp: (details) {
-          _isPressed.value = false;
-        },
-        onTap: onTap,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        highlightColor: widget.bgColor.withOpacity(0.5),
+        focusColor: widget.bgColor.withOpacity(0.5),
+        splashColor: widget.bgColor,
+        onTapDown: widget.onTap != null
+            ? (details) async {
+                if (widget.isHoldType) {
+                  await Future.delayed(Durations.medium1);
+                  _isHoldColor.value = !_isHoldColor.value;
+                }
+              }
+            : null,
+        onTap: widget.onTap,
         child: ValueListenableBuilder(
-            valueListenable: _isPressed,
+            valueListenable: _isHoldColor,
             builder: (context, isPressed, _) {
               return Container(
                 padding: const EdgeInsets.all(10),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  color: isPressed ? bgColor : Colors.transparent,
+                  color: isPressed ? widget.bgColor : Colors.transparent,
                   border: Border.all(
-                    color: isPressed ? borderColor : AppColors.grey.shade400,
+                    color: isPressed
+                        ? widget.borderColor
+                        : AppColors.grey.shade400,
                   ),
                 ),
                 child: SvgPicture.asset(
-                  iconPath,
+                  widget.iconPath,
                   height: 60,
-                  colorFilter: iconColor != null
+                  colorFilter: widget.iconColor != null
                       ? ColorFilter.mode(
                           isPressed
-                              ? iconColor!
+                              ? widget.iconColor!
                               : AppColors.black.withOpacity(0.55),
                           BlendMode.srcIn,
                         )

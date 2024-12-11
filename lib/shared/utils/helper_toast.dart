@@ -51,8 +51,7 @@ class ToastHelper {
   static void showCoolErrorToast({required String title,  required String message}) {
     try {
       ElegantNotification.error(
-        width: 380,
-
+        width: 400,
         title:  AutoSizeText(
           title,
           style: AppStyles.title3SemiBold,

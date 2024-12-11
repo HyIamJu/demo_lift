@@ -37,12 +37,14 @@ class MenuDialogSettings extends StatelessWidget {
                 if (state.isLoading || state.isInitial) {
                   return const GenericCircleLoading();
                 } else if (state.isFailed) {
-                  return GenericFailureMessage(
-                    onTap: () {
-                      prov.getListCargoLift();
-                    },
-                    title: prov.failure?.codeMsg,
-                    subText: prov.failure?.message,
+                  return Center(
+                    child: GenericFailureMessage(
+                      onTap: () {
+                        prov.getListCargoLift();
+                      },
+                      title: prov.failure?.codeMsg,
+                      subText: prov.failure?.message,
+                    ),
                   );
                 } else if (state.isLoaded) {
                   return Column(

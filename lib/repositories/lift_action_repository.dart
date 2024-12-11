@@ -45,11 +45,23 @@ class LiftActionRepository {
     }
   }
 
-  ResultFuture<bool> emergency() async {
+  ResultFuture<bool> emergencyStart() async {
     try {
       await httpClient.localClient.post(
         '/control',
         data: {"pin": 4},
+      );
+      return const Right(true);
+    } catch (e) {
+      // Tangani error jika terjadi masalah dengan API
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+  ResultFuture<bool> emergencyStop() async {
+    try {
+      await httpClient.localClient.post(
+        '/control',
+        data: {"pin": 5},
       );
       return const Right(true);
     } catch (e) {

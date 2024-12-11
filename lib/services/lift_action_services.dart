@@ -8,5 +8,6 @@ class LiftActionServices {
   ResultFuture<bool> upLift() async => await actionLiftRepository.goUp();
   ResultFuture<bool> downLift() async => await actionLiftRepository.goDown();
   ResultFuture<bool> holdLift() async => await actionLiftRepository.hold();
-  ResultFuture<bool> emergency() async => await actionLiftRepository.emergency();
+  ResultFuture<bool> emergencyStart() async => await actionLiftRepository.emergencyStart();
+  ResultFuture<bool> emergencyStop() async => await actionLiftRepository.emergencyStop();
 }

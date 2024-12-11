@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import '../../../viewmodels/cargolift_action_provider.dart';
 import '../../../constants/app_route_const.dart';
 import '../../../viewmodels/auth_provider.dart';
 import 'package:provider/provider.dart';
@@ -23,25 +24,13 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  String liftStatus = '-';
-  final FocusNode _focusNode = FocusNode();
-  final TextEditingController _controller = TextEditingController();
-
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<LiftCargoDetailProvider>().getDetailLift();
+      context.read<LiftActionProvider>().renewTimeStamp();
     });
-    _focusNode.requestFocus();
-  }
-
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    _controller.dispose();
-    super.dispose();
   }
 
   @override
@@ -91,7 +80,10 @@ class _HomeViewState extends State<HomeView> {
           ),
           const Gap(8),
           CustomContainerButton(
-            iconPath: SvgPicture.asset(AppIcons.icLogOut, colorFilter: const ColorFilter.mode(Colors.red, BlendMode.srcIn),),
+            iconPath: SvgPicture.asset(
+              AppIcons.icLogOut,
+              colorFilter: const ColorFilter.mode(Colors.red, BlendMode.srcIn),
+            ),
             text: 'Log Out',
             onTap: () {
               context.read<AuthProvider>().logoutAndClearAuth();
@@ -103,11 +95,3 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 }
-
-// OutlineInputBorder get _borderStyle => OutlineInputBorder(
-//       borderRadius: BorderRadius.circular(AppRadius.r8),
-//       borderSide: BorderSide(
-//         color: AppColors.grey.shade400,
-//         width: AppSizes.s1,
-//       ),
-//     );

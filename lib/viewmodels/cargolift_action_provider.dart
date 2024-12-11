@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../constants/app_configs.dart';
 import '../services/lift_action_services.dart';
 import '../services/locator.dart';
 import '../shared/error/failure.dart';
@@ -9,40 +10,40 @@ import '../shared/utils/helper_toast.dart';
 class LiftActionProvider extends ChangeNotifier {
   Failure? failure;
   MyState state = MyState.initial;
+  bool isEmergencyActive = false;
   final _service = serviceLocator<LiftActionServices>();
-  
 
+  DateTime _timeStampLastAction = DateTime.now();
+
+  void renewTimeStamp() {
+    _timeStampLastAction = DateTime.now();
+  }
+
+  bool isSessionExpired() {
+    int maxDifferenceInvalid = AppConfigs.timeOutSession; 
+    var now = DateTime.now();
+    final difference = _timeStampLastAction.difference(now).inSeconds.abs();
+    return difference > maxDifferenceInvalid;
+  }
 
   Future<bool> liftUp() async {
     state = state.loading;
     notifyListeners();
-    final resultHold = await _service.holdLift();
 
     bool finalResultUp = false;
-
-    resultHold.fold(
+    final goUp = await _service.upLift();
+    goUp.fold(
       (l) {
         finalResultUp = false;
         state = state.failed;
         notifyListeners();
-        ToastHelper.showCoolErrorToast(title: "Local Service Error", message: l.message);
+        ToastHelper.showCoolErrorToast(title: "Lift Service Error", message: "Please Check Service Connection!");
       },
-      (r) async {
-        await Future.delayed(const Duration(milliseconds: 1500));
-        final goUp = await _service.upLift();
-        goUp.fold(
-          (l) {
-            finalResultUp = false;
-            state = state.failed;
-            notifyListeners();
-            ToastHelper.showCoolErrorToast(title: "Local Service Error", message: l.message);
-          },
-          (r) {
-            finalResultUp = true;
-            state = state.loaded;
-            notifyListeners();
-          },
-        );
+      (r) {
+        renewTimeStamp();
+        finalResultUp = true;
+        state = state.loaded;
+        notifyListeners();
       },
     );
 
@@ -52,32 +53,22 @@ class LiftActionProvider extends ChangeNotifier {
   Future<bool> liftDown() async {
     state = state.loading;
     notifyListeners();
-    final reponseHold = await _service.holdLift();
     bool finalResultDown = false;
 
-    reponseHold.fold(
+    final responseUp = await _service.downLift();
+    responseUp.fold(
       (l) {
         finalResultDown = false;
         state = state.failed;
         notifyListeners();
-        ToastHelper.showCoolErrorToast(title: "Local Service Error", message: l.message);
+        ToastHelper.showCoolErrorToast(
+            title: "Lift Service Error", message: "Please Check Service Connection!");
       },
-      (r) async {
-        await Future.delayed(const Duration(milliseconds: 1500));
-        final responseUp = await _service.downLift();
-        responseUp.fold(
-          (l) {
-            finalResultDown = false;
-            state = state.failed;
-            notifyListeners();
-            ToastHelper.showCoolErrorToast(title: "Local Service Error", message: l.message);
-          },
-          (r) {
-            finalResultDown = true;
-            state = state.loaded;
-            notifyListeners();
-          },
-        );
+      (r) {
+        renewTimeStamp();
+        finalResultDown = true;
+        state = state.loaded;
+        notifyListeners();
       },
     );
     return finalResultDown;
@@ -94,9 +85,11 @@ class LiftActionProvider extends ChangeNotifier {
         result = false;
         state = state.failed;
         notifyListeners();
-        ToastHelper.showCoolErrorToast(title: "Local Service Error", message: l.message);
+        ToastHelper.showCoolErrorToast(
+            title: "Lift Service Error", message: "Please Check Service Connection!");
       },
       (r) {
+        renewTimeStamp();
         result = true;
         state = state.loaded;
         notifyListeners();
@@ -108,17 +101,47 @@ class LiftActionProvider extends ChangeNotifier {
   Future<bool> emergencyStop() async {
     state = state.loading;
     notifyListeners();
-    final response = await _service.emergency();
+    final response = await _service.emergencyStop();
 
     bool result = false;
     response.fold(
       (l) {
+        isEmergencyActive = false;
         result = false;
         state = state.failed;
         notifyListeners();
-        ToastHelper.showCoolErrorToast(title: "Local Service Error", message: l.message);
+        ToastHelper.showCoolErrorToast(
+            title: "Lift Service Error", message: "Please Check Connection Service!");
       },
       (r) {
+        renewTimeStamp();
+        isEmergencyActive = false;
+        result = true;
+        state = state.loaded;
+        notifyListeners();
+      },
+    );
+    return result;
+  }
+
+  Future<bool> emergencyStart() async {
+    state = state.loading;
+    notifyListeners();
+    final response = await _service.emergencyStart();
+
+    bool result = false;
+    response.fold(
+      (l) {
+        isEmergencyActive = true;
+        result = false;
+        state = state.failed;
+        notifyListeners();
+        ToastHelper.showCoolErrorToast(
+            title: "Lift Service Error", message: "Please Check Service Connection!");
+      },
+      (r) {
+        renewTimeStamp();
+        isEmergencyActive = true;
         result = true;
         state = state.loaded;
         notifyListeners();

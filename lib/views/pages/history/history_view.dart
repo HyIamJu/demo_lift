@@ -2,22 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import '../../../constants/app_route_const.dart';
-import '../../../shared/extensions/string_extenstion.dart';
-import '../../../shared/finite_state.dart';
-import '../../../viewmodels/cargolift_logs_provider.dart';
-import '../../../widgets/custom_chached_image.dart';
 import 'package:provider/provider.dart';
+
 import '../../../constants/app_assets.dart';
 import '../../../constants/app_colors.dart';
+import '../../../constants/app_route_const.dart';
 import '../../../constants/app_styles.dart';
 import '../../../models/lift_action_log.dart';
 import '../../../services/locator.dart';
 import '../../../services/shared_pref_services.dart';
 import '../../../shared/extensions/context_extenstion.dart';
+import '../../../shared/extensions/string_extenstion.dart';
+import '../../../shared/finite_state.dart';
 import '../../../shared/network/generic_failure_message_widget.dart';
 import '../../../shared/network/generic_loading_widget.dart';
 import '../../../shared/utils/date_formating.dart';
+import '../../../viewmodels/cargolift_logs_provider.dart';
+import '../../../widgets/custom_chached_image.dart';
 import '../../../widgets/datepicker_custom.dart';
 
 class HistoryView extends StatefulWidget {

@@ -8,6 +8,7 @@ import '../../../../shared/finite_state.dart';
 import '../../../../viewmodels/cargolift_action_provider.dart';
 import '../../../../viewmodels/cargolift_detail_provider.dart';
 import '../../../../viewmodels/cargolift_logs_provider.dart';
+import '../../../dialogs/error_dialog.dart';
 import '../widgets/button_lift_action.dart';
 
 class HomeButtonSectionView extends StatelessWidget {
@@ -29,7 +30,8 @@ class HomeButtonSectionView extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: _borderStyle,
-        child: Consumer<LiftActionProvider>(builder: (context, liftControler, _) {
+        child:
+            Consumer<LiftActionProvider>(builder: (context, liftControler, _) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -40,14 +42,26 @@ class HomeButtonSectionView extends StatelessWidget {
                 iconPath: AppIcons.icUp,
                 borderColor: AppColors.greenLunatic,
                 iconColor: AppColors.green,
-                onTap: liftControler.state.isLoading
+                onTap: (liftControler.state.isLoading ||
+                        liftControler.isEmergencyActive)
                     ? null
                     : () async {
-                        bool isSuccess = await liftControler.liftUp();
+                        if (liftControler.isSessionExpired()) {
+                          bool isSuccesRenewSession =await showDialogScanBadgeAgain(context);
+                          if (isSuccesRenewSession) {
+                            bool isSuccess = await liftControler.liftUp();
 
-                        if (isSuccess == false) {
-                          await providerLog.addHistory("UP");
-                           providerDetail.changeStatusLift("UP");
+                            if (isSuccess) {
+                              await providerLog.addHistory("UP");
+                              providerDetail.changeStatusLift("UP");
+                            }
+                          }
+                        } else {
+                          bool isSuccess = await liftControler.liftUp();
+                          if (isSuccess) {
+                            await providerLog.addHistory("UP");
+                            providerDetail.changeStatusLift("UP");
+                          }
                         }
                       },
               ),
@@ -60,13 +74,26 @@ class HomeButtonSectionView extends StatelessWidget {
                 iconPath: AppIcons.icHold,
                 bgColor: AppColors.backgroundYellow,
                 borderColor: const Color(0xFFFFB100),
-                onTap: liftControler.state.isLoading
+                onTap: (liftControler.state.isLoading ||
+                        liftControler.isEmergencyActive)
                     ? null
                     : () async {
-                        bool isSuccess = await liftControler.liftHold();
-                        if (isSuccess == false) {
-                          await providerLog.addHistory("HOLD");
-                          providerDetail.changeStatusLift("HOLD");
+                        if (liftControler.isSessionExpired()) {
+                          bool isSuccesRenewSession =await showDialogScanBadgeAgain(context);
+                          if (isSuccesRenewSession) {
+                            bool isSuccess = await liftControler.liftHold();
+
+                            if (isSuccess) {
+                              await providerLog.addHistory("HOLD");
+                              providerDetail.changeStatusLift("HOLD");
+                            }
+                          }
+                        } else {
+                          bool isSuccess = await liftControler.liftHold();
+                          if (isSuccess) {
+                            await providerLog.addHistory("HOLD");
+                            providerDetail.changeStatusLift("HOLD");
+                          }
                         }
                       },
               ),
@@ -80,13 +107,26 @@ class HomeButtonSectionView extends StatelessWidget {
                 bgColor: AppColors.backgroundGreen,
                 borderColor: AppColors.greenLunatic,
                 iconColor: AppColors.green,
-                onTap: liftControler.state.isLoading
+                onTap: (liftControler.state.isLoading ||
+                        liftControler.isEmergencyActive)
                     ? null
                     : () async {
-                        bool isSuccess = await liftControler.liftDown();
-                        if (isSuccess == false) {
-                          await providerLog.addHistory("DOWN");
-                          providerDetail.changeStatusLift("DOWN");
+                        if (liftControler.isSessionExpired()) {
+                          bool isSuccesRenewSession =await showDialogScanBadgeAgain(context);
+                          if (isSuccesRenewSession) {
+                            bool isSuccess = await liftControler.liftDown();
+
+                            if (isSuccess) {
+                              await providerLog.addHistory("DOWN");
+                              providerDetail.changeStatusLift("DOWN");
+                            }
+                          }
+                        } else {
+                          bool isSuccess = await liftControler.liftDown();
+                          if (isSuccess) {
+                            await providerLog.addHistory("DOWN");
+                            providerDetail.changeStatusLift("DOWN");
+                          }
                         }
                       },
               ),
@@ -99,14 +139,20 @@ class HomeButtonSectionView extends StatelessWidget {
                 iconPath: AppIcons.icEmergency,
                 bgColor: AppColors.backgroundRed,
                 borderColor: AppColors.grey.shade400,
+                isHoldType: true,
                 onTap: liftControler.state.isLoading
                     ? null
                     : () async {
-                        bool isSuccess = await liftControler.emergencyStop();
-                        if (isSuccess == false) {
-                          
-                          providerDetail.changeStatusLift("EMERGENCY");
-                          // providerLog.addHistory("EMERGENCY");
+                        if (liftControler.isEmergencyActive) {
+                          bool isSuccess = await liftControler.emergencyStop();
+                          if (isSuccess) {
+                            providerDetail.changeStatusLift("EMERGENCY");
+                          }
+                        } else {
+                          bool isSuccess = await liftControler.emergencyStart();
+                          if (isSuccess) {
+                            providerDetail.changeStatusLift("EMERGENCY");
+                          }
                         }
                       },
               ),

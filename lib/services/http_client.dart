@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../constants/app_configs.dart';
@@ -34,7 +35,7 @@ class HttpClient {
     );
 
     dio.interceptors.addAll({
-      _dioLoggerInterceptor,
+      if (!kReleaseMode) _dioLoggerInterceptor,
     });
 
     return dio;
@@ -46,7 +47,10 @@ class HttpClient {
       baseUrl: AppConfigs.baseUrl,
     ));
 
-    dio.interceptors.addAll({AuthInterceptor(dio), _dioLoggerInterceptor});
+    dio.interceptors.addAll({
+      AuthInterceptor(dio),
+      if (!kReleaseMode) _dioLoggerInterceptor,
+    });
     return dio;
   }
 }

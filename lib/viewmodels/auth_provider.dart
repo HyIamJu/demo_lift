@@ -29,7 +29,7 @@ class AuthProvider extends ChangeNotifier {
       if (userCache.isNotEmpty) {
         var dataMap = jsonDecode(userCache);
         user = UserModel.fromMap(dataMap);
-        notifyListeners(); 
+        notifyListeners();
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -37,14 +37,14 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  void logoutAndClearAuth(){
+  void logoutAndClearAuth() {
     _sharedPref.clearDataAuth();
     user = null;
-    token =  null;
+    token = null;
     notifyListeners();
   }
 
-  Future<void> loginWithCard(String idCard) async {
+  Future<void> loginWithNavigation(String idCard) async {
     String uuid = _sharedPref.readSelectedLift;
 
     if (uuid.isEmpty) {
@@ -75,7 +75,7 @@ class AuthProvider extends ChangeNotifier {
           user = UserModel.fromMap(data['DATA']);
           token = data['TOKEN'];
           // save to cache
-          _sharedPref.saveUser(jsonEncode((data['DATA'])) );
+          _sharedPref.saveUser(jsonEncode((data['DATA'])));
           _sharedPref.saveToken((data['TOKEN'].toString()));
           AppDialog.dismissAllDialog();
           //change state
@@ -89,5 +89,50 @@ class AuthProvider extends ChangeNotifier {
         },
       );
     }
+  }
+
+  Future<bool> loginWithoutNavigation(String idCard) async {
+    String uuid = _sharedPref.readSelectedLift;
+    bool isSuccess = false;
+    if (uuid.isEmpty) {
+      ToastHelper.showCoolErrorToast(
+          title: "Lift not selected", message: "Please set lift first!");
+    } else {
+      AppDialog.dialogLoadingCircle();
+      if (!state.isLoading) {
+        state = state.loading;
+        notifyListeners();
+      }
+      final result = await _service.login(
+        cardId: idCard,
+        cargoUuid: uuid,
+      );
+      AppDialog.dismissAllDialog();
+
+      result.fold(
+        (l) {
+          isSuccess = false;
+          failure = l;
+          AppDialog.dismissAllDialog();
+          AppDialog.toastError(l.errorMessage, longDuration: true);
+          state = state.failed;
+          notifyListeners();
+        },
+        (data) {
+          isSuccess = true;
+          // assign ke variable provider
+          user = UserModel.fromMap(data['DATA']);
+          token = data['TOKEN'];
+          // save to cache
+          _sharedPref.saveUser(jsonEncode((data['DATA'])));
+          _sharedPref.saveToken((data['TOKEN'].toString()));
+          AppDialog.dismissAllDialog();
+          //change state
+          state = state.loaded;
+          notifyListeners();
+        },
+      );
+    }
+    return isSuccess;
   }
 }
