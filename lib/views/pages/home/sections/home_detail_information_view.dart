@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import '../../../../viewmodels/cargolift_detail_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../constants/app_assets.dart';
@@ -12,12 +13,10 @@ import '../../../../widgets/custom_chached_image.dart';
 import '../../../../widgets/custom_row_list.dart';
 
 class HomeDetailInformationView extends StatelessWidget {
-  final String liftStatus;
   final int flex;
 
   const HomeDetailInformationView({
     super.key,
-    required this.liftStatus,
     required this.flex,
   });
 
@@ -122,6 +121,7 @@ class HomeDetailInformationView extends StatelessWidget {
                   // Detail Information Lift Cargo Control
                   // ----------------------------------------------
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       SvgPicture.asset(AppIcons.icDetailInformation),
                       const Gap(6),
@@ -134,33 +134,45 @@ class HomeDetailInformationView extends StatelessWidget {
                     ],
                   ),
                   const Gap(8),
-                  const CustomRowList(
-                    name: 'Location',
-                    nameFlex: 2,
-                    nameTextStyle: AppStyles.label1SemiBold,
-                    desc: 'Cargo 1',
-                    descFlex: 5,
-                    descTextStyle: AppStyles.title2Regular,
-                  ),
-                  const Gap(8),
-                  CustomRowList(
-                    name: 'Status',
-                    nameFlex: 2,
-                    nameTextStyle: AppStyles.label1SemiBold,
-                    desc: liftStatus,
-                    descTextStyle: AppStyles.label2SemiBold,
-                    descFlex: 5,
-                  ),
-                  const Gap(8),
-                  CustomRowList(
-                    name: 'Date Time',
-                    nameFlex: 2,
-                    nameTextStyle: AppStyles.label1SemiBold,
-                    desc: formatDateString(DateTime.now().toString(),
-                        toFormat: 'dd MMMM yyyy, HH:mm'),
-                    descFlex: 5,
-                    descTextStyle: AppStyles.title2Regular,
-                  ),
+                  Consumer<LiftCargoDetailProvider>(
+                      builder: (context, provDetail, _) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomRowList(
+                           crossAxisAlignment: CrossAxisAlignment.start,
+                          name: 'Location',
+                          nameFlex: 2,
+                          nameTextStyle: AppStyles.label1SemiBold,
+                          desc: provDetail.detailLift?.cargoLiftName ?? "",
+                          descFlex: 5,
+                          descTextStyle: AppStyles.title2Regular,
+                        ),
+                        const Gap(8),
+                        CustomRowList(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          name: 'Status',
+                          nameFlex: 2,
+                          nameTextStyle: AppStyles.label1SemiBold,
+                          desc: provDetail.detailLift?.cargoLiftButton ?? "",
+                          descTextStyle: AppStyles.title2SemiBold,
+                          descFlex: 5,
+                        ),
+                        const Gap(8),
+                        CustomRowList(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          name: 'Date Time',
+                          nameFlex: 2,
+                          nameTextStyle: AppStyles.label1SemiBold,
+                          desc: formatDateString(
+                              provDetail.detailLift?.createdAt ?? "",
+                              toFormat: 'dd MMMM yyyy, HH:mm'),
+                          descFlex: 5,
+                          descTextStyle: AppStyles.title2Regular,
+                        ),
+                      ],
+                    );
+                  }),
                 ],
               );
             },

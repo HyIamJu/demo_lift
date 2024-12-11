@@ -24,6 +24,9 @@ class AppDialog {
         fontSize: 14,
         msg: pesan,
         backgroundColor: const Color(0xFFD22027),
+        webBgColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+        webShowClose: true,
+        timeInSecForIosWeb: 2,
         textColor: Colors.white,
         toastLength: longDuration ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT,
         gravity: gravity);
@@ -37,6 +40,9 @@ class AppDialog {
         fontSize: 14,
         msg: pesan,
         backgroundColor: Colors.green,
+        webBgColor: "linear-gradient(to right, #56ab2f, #a8e063)",
+        webShowClose: true,
+        timeInSecForIosWeb: 2,
         textColor: Colors.white,
         toastLength: longDuration ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT,
         gravity: gravity);
@@ -48,6 +54,9 @@ class AppDialog {
         fontSize: 14,
         msg: pesan,
         backgroundColor: Colors.grey.shade200,
+        webBgColor: "linear-gradient(to right, #2193b0, #6dd5ed)",
+        webShowClose: true,
+        timeInSecForIosWeb: 2,
         textColor: Colors.black,
         toastLength: longDuration ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM);

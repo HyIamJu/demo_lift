@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ClockProvider()..startTimerClock(), lazy: true),
         ChangeNotifierProvider(create: (_) => NFCProvider()),
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()..intializeAuthProvider()),
         ChangeNotifierProvider(create: (_) => LiftCargoListProvider()..initializeLiftCargoList()),
         ChangeNotifierProvider(create: (_) => LiftCargoDetailProvider()),
         ChangeNotifierProvider(create: (_) => LiftActionProvider()),

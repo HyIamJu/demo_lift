@@ -17,6 +17,7 @@ class SharedPreferencesServices {
     if (_instance == null) {
       _instance = SharedPreferencesServices._();
       _preferences = await SharedPreferences.getInstance();
+      debugPrint("shared preference intialize");
     }
     return _instance!;
   }
@@ -59,6 +60,12 @@ class SharedPreferencesServices {
     }
   }
 
+  // clear data
+  void clearDataAuth(){
+    _preferences?.remove(_kTokenLoginAuth);
+    _preferences?.remove(_kUserData);
+  }
+
   // ----------------------------------------------
   // get and save token login
   // ----------------------------------------------
@@ -74,8 +81,8 @@ class SharedPreferencesServices {
   // ----------------------------------------------
   // get and save usser
   // ----------------------------------------------
-  String get readSelectedLift => _getData(_kLiftSelected) ?? "";
-  String get readSelectedNameLift => _getData(_kLiftSelecteName) ?? "";
+  String get readSelectedLift => (_getData(_kLiftSelected) ?? "");
+  String get readSelectedNameLift => (_getData(_kLiftSelecteName) ?? "");
   void saveLiftSelected(String value) => _saveData(_kLiftSelected, value);
   void saveNameLiftSelected(String value) => _saveData(_kLiftSelecteName, value);
 }

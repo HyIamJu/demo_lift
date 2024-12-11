@@ -43,7 +43,7 @@ class LiftCargoRepository {
       final response = await httpClient.authClient.get(
         '/cargoLift/cargoLiftDetail',
         queryParameters: {
-          "uuid_cargo": "a2ab5535-1076-466a-96e8-0d6865faa3e8",
+          "uuid_cargo": uuidCargo,
         },
       );
 
@@ -59,7 +59,7 @@ class LiftCargoRepository {
   ResultFuture<bool> cargoLiftAddLog(
       {required String uuidCargo, required String indicator}) async {
     try {
-      await httpClient.authClient.get(
+      await httpClient.authClient.post(
         '/cargoLift/ActionCargo',
         queryParameters: {
           "uuid_cargo": uuidCargo,
@@ -78,9 +78,10 @@ class LiftCargoRepository {
   ResultFuture<List<LiftActionLog>> cargoLiftListHistory(
       {required String uuidCargo}) async {
     try {
-      final response = await httpClient.authClient.get(
+      final response = await httpClient.basicClient.get(
         '/cargoLift/cargoHistory',
         queryParameters: {
+          "secret_key": AppConfigs.secretKey,
           "uuid_cargo": uuidCargo,
         },
       );

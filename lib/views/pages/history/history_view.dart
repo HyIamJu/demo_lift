@@ -2,11 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-
+import '../../../constants/app_route_const.dart';
+import '../../../shared/extensions/string_extenstion.dart';
+import '../../../shared/finite_state.dart';
+import '../../../viewmodels/cargolift_logs_provider.dart';
+import '../../../widgets/custom_chached_image.dart';
+import 'package:provider/provider.dart';
 import '../../../constants/app_assets.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_styles.dart';
+import '../../../models/lift_action_log.dart';
+import '../../../services/locator.dart';
+import '../../../services/shared_pref_services.dart';
 import '../../../shared/extensions/context_extenstion.dart';
+import '../../../shared/network/generic_failure_message_widget.dart';
+import '../../../shared/network/generic_loading_widget.dart';
 import '../../../shared/utils/date_formating.dart';
 import '../../../widgets/datepicker_custom.dart';
 
@@ -18,9 +28,24 @@ class HistoryView extends StatefulWidget {
 }
 
 class _HistoryViewState extends State<HistoryView> {
-  final bool isLogin = false;
+  final _sharedPref = serviceLocator<SharedPreferencesServices>();
 
-  DateTime _selectedDate = DateTime.now();
+  bool loginStatus = false;
+
+  @override
+  void initState() {
+    if (_sharedPref.readToken.isNotEmpty) {
+      loginStatus = true;
+    } else {
+      loginStatus = false;
+    }
+    var provLogs = context.read<CargoLiftLogsProvider>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      provLogs.dateTimeShowing = DateTime.now();
+      provLogs.getLogActions();
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,58 +55,62 @@ class _HistoryViewState extends State<HistoryView> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Divider(),
-            Row(
-              children: [
-                Text(
-                  formatDateString(
-                    _selectedDate.toString(),
-                    toFormat: "dd MMMM yyyy",
-                  ),
-                  style: AppStyles.label2Medium,
-                ),
-                const Gap(8),
-                GestureDetector(
-                  onTap: () {
-                    showCustomDatePickerNormal(
-                      context,
-                      currentDate: _selectedDate,
-                      firstDate: DateTime(2018),
-                      lastDate: DateTime(2030),
-                    ).then((selectedDate) {
-                      setState(() {
-                        _selectedDate = selectedDate;
-                      });
-                    });
-                  },
-                  child: SvgPicture.asset(AppIcons.icCalender),
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.arrow_back_ios_new_rounded,
-                    size: 15,
-                  ),
-                ),
-                const Text(
-                  '1/2',
-                  style: AppStyles.label2Regular,
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    size: 15,
-                  ),
-                )
-              ],
-            ),
-            _historyTable(context),
+            _datePicker(context),
+            // ----------------------------------------------
+            // Header
+            // ----------------------------------------------
+            _headerTable(context),
+            // ----------------------------------------------
+            // data table
+            // ----------------------------------------------
+            _dataTable(context),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _datePicker(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end ,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Consumer<CargoLiftLogsProvider>(builder: (context, provDetail, _) {
+            return Text(
+              formatDateString(
+                provDetail.dateTimeShowing.toString(),
+                toFormat: "dd MMMM yyyy",
+              ),
+              style: AppStyles.label2SemiBold,
+            );
+          }),
+          const Gap(8),
+          GestureDetector(
+            onTap: () {
+              var logProvider = context.read<CargoLiftLogsProvider>();
+              var currentDate = logProvider.dateTimeShowing;
+
+              showCustomDatePickerNormal(
+                context,
+                currentDate: currentDate,
+                firstDate: DateTime(2024),
+                lastDate: DateTime.now(), 
+              ).then((selectedDate) {
+                if (selectedDate != currentDate) {
+                  logProvider.updateDateShowing(selectedDate);
+                }
+              });
+            },
+            child: SvgPicture.asset(AppIcons.icCalender),
+          ),
+          
+        ],
       ),
     );
   }
@@ -89,18 +118,19 @@ class _HistoryViewState extends State<HistoryView> {
   AppBar _appBar(BuildContext context) {
     return AppBar(
       backgroundColor: AppColors.white,
+      elevation: 0,
+      forceMaterialTransparency: true,
+      shadowColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      leadingWidth: 80,
       leading: IconButton(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         onPressed: () {
-          if (isLogin) {
-            context.goNamed('home');
-          } else {
-            context.goNamed('login');
-          }
+          loginStatus
+              ? context.go(AppRouteConst.home)
+              : context.go(AppRouteConst.login);
         },
-        icon: const Icon(
-          Icons.arrow_back_ios_outlined,
-          size: 18,
-        ),
+        icon: const Icon(Icons.arrow_back_ios_outlined, size: 24, weight: 500),
       ),
       title: const Text(
         'History Status Lift Cargo Control',
@@ -110,7 +140,7 @@ class _HistoryViewState extends State<HistoryView> {
   }
 }
 
-Widget _historyTable(BuildContext context) {
+Widget _headerTable(BuildContext context) {
   return Table(
     border: const TableBorder(
       horizontalInside: BorderSide.none,
@@ -120,10 +150,13 @@ Widget _historyTable(BuildContext context) {
     columnWidths: {
       0: FixedColumnWidth(context.fullWidth * 0.04),
       1: FixedColumnWidth(context.fullWidth * 0.53),
-      2: FixedColumnWidth(context.fullWidth * 0.12),
-      3: FixedColumnWidth(context.fullWidth * 0.1),
+      2: FixedColumnWidth(context.fullWidth * 0.1),
+      3: FixedColumnWidth(context.fullWidth * 0.12),
     },
     children: [
+      // ----------------------------------------------
+      // HEADER TABEL
+      // ----------------------------------------------
       TableRow(
         decoration:
             BoxDecoration(color: Colors.grey.shade300.withOpacity(0.25)),
@@ -135,32 +168,85 @@ Widget _historyTable(BuildContext context) {
           _buildTableHeaderCell('Date'),
         ],
       ),
-      TableRow(
-        decoration: _underLine,
-        children: [
-          _buildTableCell('1'),
-          _buildTableCellWithAvatar(
-            'Franklin Lim (29182915)',
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPUNjiFBSAEiCYZl0XHhfYc7jWxVPQMOJjwQ&s',
+    ],
+  );
+}
+
+Widget _dataTable(BuildContext context) {
+  return Consumer<CargoLiftLogsProvider>(
+    builder: (context, logProvider, _) {
+      var state = logProvider.state;
+
+      if (state.isLoading || state.isInitial) {
+        return const Center(heightFactor: 5, child: GenericCircleLoading());
+      } else if (state.isFailed) {
+        return Center(
+          heightFactor: 3,
+          child: GenericFailureMessage(
+            onTap: () {
+              logProvider.getLogActions();
+            },
+            title: logProvider.failure?.codeMsg,
+            subText: logProvider.failure?.message,
           ),
-          _buildTableCell('F1 to F3'),
-          _buildTableCell('LT.1 SMT'),
-          _buildTableCell('26 Nov 2024, 11:10'),
-        ],
-      ),
-      TableRow(
-        decoration: _underLine,
-        children: [
-          _buildTableCell('2'),
-          _buildTableCellWithAvatar(
-            'Muhammad Chandra Pratama  (29182915)',
-            'https://i.mydramalist.com/RBk6gg_5c.jpg',
+        );
+      } else if (state.isLoaded) {
+        List<LiftActionLog> historyLogs = logProvider.historyLogs;
+
+        if (historyLogs.isEmpty) {
+          return const Center(heightFactor: 6, child: Text("No Data History"));
+        }
+
+        return Expanded(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Table(
+              border: const TableBorder(
+                horizontalInside: BorderSide.none,
+                verticalInside: BorderSide.none,
+                bottom: BorderSide.none,
+              ),
+              columnWidths: {
+                0: FixedColumnWidth(context.fullWidth * 0.04),
+                1: FixedColumnWidth(context.fullWidth * 0.53),
+                2: FixedColumnWidth(context.fullWidth * 0.1),
+                3: FixedColumnWidth(context.fullWidth * 0.12),
+              },
+              children: [
+                // ----------------------------------------------
+                // DATA TABEL
+                // ----------------------------------------------
+
+                for (var i = 0; i < historyLogs.length; i++)
+                  tableRowData(no: "${i + 1}", data: historyLogs.elementAt(i))
+
+                // tableRowData(),
+              ],
+            ),
           ),
-          _buildTableCell('EMERGENCY'),
-          _buildTableCell('LT.1 SMT'),
-          _buildTableCell('26 Nov 2024, 11:10'),
-        ],
+        );
+      }
+
+      return const SizedBox.shrink();
+    },
+  );
+}
+
+TableRow tableRowData({required String no, required LiftActionLog data}) {
+  return TableRow(
+    decoration: _underLine,
+    children: [
+      _buildTableCell(no),
+      _buildTableCellWithAvatar(
+        text:
+            '${(data.employeeName ?? "-").toTitleCase()} (${data.employeeBadge})',
+        imgpath: data.userImage ?? "",
       ),
+      _buildTableCell(data.cargoLiftButton ?? ""), //'F1 to F3'
+      _buildTableCell(
+          "${data.floorName ?? ""} - ${data.departmentName ?? ""}"), //    'LT.1 SMT'
+      _buildTableCell(formatDateString(data.createdAt ?? "-",
+          toFormat: "dd MMM yyyy, HH:mm")), // '26 Nov 2024, 11:10'
     ],
   );
 }
@@ -185,10 +271,10 @@ Widget _buildTableCell(String text) {
   );
 }
 
-Widget _buildTableCellWithAvatar(
-  String text,
-  String imgpath,
-) {
+Widget _buildTableCellWithAvatar({
+  required String text,
+  required String imgpath,
+}) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
     child: Row(
@@ -201,9 +287,14 @@ Widget _buildTableCellWithAvatar(
             shape: CircleBorder(),
             shadows: [BoxShadow(spreadRadius: 1, color: AppColors.grey)],
           ),
-          child: Image.network(
-            imgpath,
-            fit: BoxFit.cover,
+          child: CustomCachedImage(
+            url: imgpath,
+            boxFit: BoxFit.cover,
+            errorWidget: Icon(
+              Icons.person,
+              size: 16,
+              color: AppColors.black.shade200,
+            ),
           ),
         ),
         const Gap(8),

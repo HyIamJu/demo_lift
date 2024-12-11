@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import '../../../../shared/finite_state.dart';
-import '../../../../viewmodels/cargolift_action_provider.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../constants/app_assets.dart';
 import '../../../../constants/app_colors.dart';
+import '../../../../shared/finite_state.dart';
+import '../../../../viewmodels/cargolift_action_provider.dart';
+import '../../../../viewmodels/cargolift_detail_provider.dart';
+import '../../../../viewmodels/cargolift_logs_provider.dart';
 import '../widgets/button_lift_action.dart';
 
 class HomeButtonSectionView extends StatelessWidget {
@@ -19,12 +22,14 @@ class HomeButtonSectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var providerLog = context.read<CargoLiftLogsProvider>();
+    var providerDetail = context.read<LiftCargoDetailProvider>();
     return Expanded(
       flex: 1,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: _borderStyle,
-        child: Consumer<LiftActionProvider>(builder: (context, provider, _) {
+        child: Consumer<LiftActionProvider>(builder: (context, liftControler, _) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -35,10 +40,15 @@ class HomeButtonSectionView extends StatelessWidget {
                 iconPath: AppIcons.icUp,
                 borderColor: AppColors.greenLunatic,
                 iconColor: AppColors.green,
-                onTap: provider.state.isLoading
+                onTap: liftControler.state.isLoading
                     ? null
-                    : () async{
-                        await provider.liftUp();
+                    : () async {
+                        bool isSuccess = await liftControler.liftUp();
+
+                        if (isSuccess == false) {
+                          await providerLog.addHistory("UP");
+                           providerDetail.changeStatusLift("UP");
+                        }
                       },
               ),
               const Gap(10),
@@ -50,10 +60,14 @@ class HomeButtonSectionView extends StatelessWidget {
                 iconPath: AppIcons.icHold,
                 bgColor: AppColors.backgroundYellow,
                 borderColor: const Color(0xFFFFB100),
-                onTap: provider.state.isLoading
+                onTap: liftControler.state.isLoading
                     ? null
-                    : () async{
-                        await  provider.liftHold();
+                    : () async {
+                        bool isSuccess = await liftControler.liftHold();
+                        if (isSuccess == false) {
+                          await providerLog.addHistory("HOLD");
+                          providerDetail.changeStatusLift("HOLD");
+                        }
                       },
               ),
               const Gap(10),
@@ -66,10 +80,14 @@ class HomeButtonSectionView extends StatelessWidget {
                 bgColor: AppColors.backgroundGreen,
                 borderColor: AppColors.greenLunatic,
                 iconColor: AppColors.green,
-                onTap: provider.state.isLoading
+                onTap: liftControler.state.isLoading
                     ? null
-                    : () async{
-                        await  provider.liftDown();
+                    : () async {
+                        bool isSuccess = await liftControler.liftDown();
+                        if (isSuccess == false) {
+                          await providerLog.addHistory("DOWN");
+                          providerDetail.changeStatusLift("DOWN");
+                        }
                       },
               ),
               const Gap(10),
@@ -81,10 +99,15 @@ class HomeButtonSectionView extends StatelessWidget {
                 iconPath: AppIcons.icEmergency,
                 bgColor: AppColors.backgroundRed,
                 borderColor: AppColors.grey.shade400,
-                onTap: provider.state.isLoading
+                onTap: liftControler.state.isLoading
                     ? null
-                    : () async{
-                        await provider.emergencyStop();
+                    : () async {
+                        bool isSuccess = await liftControler.emergencyStop();
+                        if (isSuccess == false) {
+                          
+                          providerDetail.changeStatusLift("EMERGENCY");
+                          // providerLog.addHistory("EMERGENCY");
+                        }
                       },
               ),
             ],

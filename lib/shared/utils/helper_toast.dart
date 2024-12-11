@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:elegant_notification/resources/arrays.dart';
 import 'package:flutter/material.dart';
@@ -51,24 +52,31 @@ class ToastHelper {
     try {
       ElegantNotification.error(
         width: 380,
-        title:  Text(
+
+        title:  AutoSizeText(
           title,
-          style: AppStyles.title3Medium,
+          style: AppStyles.title3SemiBold,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
-        description: Text(
+        description: AutoSizeText(
           message,
           style: AppStyles.title3Regular,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
         icon: const Icon(
           Icons.error_outline,
           color: AppColors.red,
           size: 45,
+          
         ),
         
         animationCurve: Curves.easeInOut,
-        toastDuration: const Duration(seconds: 6),
+        toastDuration: const Duration(milliseconds: 4500),
         animation: AnimationType.fromLeft,
         position: Alignment.bottomLeft,
+        
         border: Border.all(color: AppColors.grey.shade200),
       ).show(navigatorKey.currentContext!);
     } catch (e) {

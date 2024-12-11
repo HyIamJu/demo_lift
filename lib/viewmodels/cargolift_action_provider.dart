@@ -25,16 +25,17 @@ class LiftActionProvider extends ChangeNotifier {
         finalResultUp = false;
         state = state.failed;
         notifyListeners();
-        ToastHelper.showCoolErrorToast(title: l.codeMsg, message: l.message);
+        ToastHelper.showCoolErrorToast(title: "Local Service Error", message: l.message);
       },
       (r) async {
+        await Future.delayed(const Duration(milliseconds: 1500));
         final goUp = await _service.upLift();
         goUp.fold(
           (l) {
             finalResultUp = false;
             state = state.failed;
             notifyListeners();
-            ToastHelper.showCoolErrorToast(title: l.codeMsg, message: l.message);
+            ToastHelper.showCoolErrorToast(title: "Local Service Error", message: l.message);
           },
           (r) {
             finalResultUp = true;
@@ -59,16 +60,17 @@ class LiftActionProvider extends ChangeNotifier {
         finalResultDown = false;
         state = state.failed;
         notifyListeners();
-        ToastHelper.showCoolErrorToast(title: l.codeMsg, message: l.message);
+        ToastHelper.showCoolErrorToast(title: "Local Service Error", message: l.message);
       },
       (r) async {
+        await Future.delayed(const Duration(milliseconds: 1500));
         final responseUp = await _service.downLift();
         responseUp.fold(
           (l) {
             finalResultDown = false;
             state = state.failed;
             notifyListeners();
-            ToastHelper.showCoolErrorToast(title: l.codeMsg, message: l.message);
+            ToastHelper.showCoolErrorToast(title: "Local Service Error", message: l.message);
           },
           (r) {
             finalResultDown = true;
@@ -92,7 +94,7 @@ class LiftActionProvider extends ChangeNotifier {
         result = false;
         state = state.failed;
         notifyListeners();
-        ToastHelper.showCoolErrorToast(title: l.codeMsg, message: l.message);
+        ToastHelper.showCoolErrorToast(title: "Local Service Error", message: l.message);
       },
       (r) {
         result = true;
@@ -114,7 +116,7 @@ class LiftActionProvider extends ChangeNotifier {
         result = false;
         state = state.failed;
         notifyListeners();
-        ToastHelper.showCoolErrorToast(title: l.codeMsg, message: l.message);
+        ToastHelper.showCoolErrorToast(title: "Local Service Error", message: l.message);
       },
       (r) {
         result = true;

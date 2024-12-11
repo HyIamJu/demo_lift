@@ -1,14 +1,18 @@
-
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/app_styles.dart';
 
-
 class GenericFailureMessage extends StatelessWidget {
-  const GenericFailureMessage(
-      {super.key, this.onTap, this.title, this.subText,  this.txtColor = AppColors.black,  this.btnColor = AppColors.blue});
+  const GenericFailureMessage({
+    super.key,
+    this.onTap,
+    this.title,
+    this.subText,
+    this.txtColor = AppColors.black,
+    this.btnColor = AppColors.blue,
+  });
   final VoidCallback? onTap;
   final String? title;
   final String? subText;
@@ -18,7 +22,7 @@ class GenericFailureMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width * 0.7;
+    double width = MediaQuery.of(context).size.width * 0.4;
     return SizedBox(
       width: width,
       child: Column(
@@ -47,7 +51,6 @@ class GenericFailureMessage extends StatelessWidget {
               subText ?? "",
               style: TextStyle(color: txtColor),
               textAlign: TextAlign.center,
-              
             ),
             const Gap(14),
           ],
@@ -59,9 +62,9 @@ class GenericFailureMessage extends StatelessWidget {
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
-                    side:  BorderSide(color: btnColor),
+                    side: BorderSide(color: btnColor),
                   ),
-                  child:  Text(
+                  child: Text(
                     "Retry",
                     style: TextStyle(color: btnColor),
                   )),

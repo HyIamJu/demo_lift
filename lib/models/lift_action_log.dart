@@ -21,6 +21,7 @@ class LiftActionLog {
     String? cargoLiftButton;
     String? floorName;
     String? createdAt;
+    String? userImage;
 
     LiftActionLog({
         this.cargoLiftLogId,
@@ -35,6 +36,7 @@ class LiftActionLog {
         this.cargoLiftButton,
         this.floorName,
         this.createdAt,
+        this.userImage,
     });
 
     LiftActionLog copyWith({
@@ -50,6 +52,7 @@ class LiftActionLog {
         String? cargoLiftButton,
         String? floorName,
         String? createdAt,
+        String? userImage,
     }) => 
         LiftActionLog(
             cargoLiftLogId: cargoLiftLogId ?? this.cargoLiftLogId,
@@ -64,6 +67,7 @@ class LiftActionLog {
             cargoLiftButton: cargoLiftButton ?? this.cargoLiftButton,
             floorName: floorName ?? this.floorName,
             createdAt: createdAt ?? this.createdAt,
+            userImage:  userImage ?? this.userImage,
         );
 
     factory LiftActionLog.fromMap(Map<String, dynamic> json) => LiftActionLog(
@@ -79,6 +83,7 @@ class LiftActionLog {
         cargoLiftButton: json["cargo_lift_button"],
         floorName: json["floor_name"],
         createdAt: json["created_at"],
+        userImage: json["image"]
     );
 
     Map<String, dynamic> toMap() => {
@@ -94,5 +99,6 @@ class LiftActionLog {
         "cargo_lift_button": cargoLiftButton,
         "floor_name": floorName,
         "created_at": createdAt,
+        "image": userImage,
     };
 }

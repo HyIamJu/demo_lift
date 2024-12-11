@@ -11,6 +11,7 @@ import '../services/shared_pref_services.dart';
 import '../shared/error/failure.dart';
 import '../shared/finite_state.dart';
 import '../shared/navigator_keys.dart';
+import '../shared/utils/helper_toast.dart';
 import '../views/dialogs/app_dialog.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -22,54 +23,71 @@ class AuthProvider extends ChangeNotifier {
   final _service = serviceLocator<AuthService>();
   final _sharedPref = serviceLocator<SharedPreferencesServices>();
 
-  intializeAuthProvider() {
+  void intializeAuthProvider() {
     try {
       String userCache = _sharedPref.readUser;
       if (userCache.isNotEmpty) {
-        user = UserModel.fromMap(jsonDecode(userCache));
+        var dataMap = jsonDecode(userCache);
+        user = UserModel.fromMap(dataMap);
+        notifyListeners(); 
       }
     } catch (e) {
+      debugPrint(e.toString());
       debugPrint("error load data usser");
     }
   }
 
+  void logoutAndClearAuth(){
+    _sharedPref.clearDataAuth();
+    user = null;
+    token =  null;
+    notifyListeners();
+  }
+
   Future<void> loginWithCard(String idCard) async {
-    var uuid = _sharedPref.readSelectedLift;
-    AppDialog.dialogLoadingCircle();
-    if (!state.isLoading) {
-      state = state.loading;
-      notifyListeners();
+    String uuid = _sharedPref.readSelectedLift;
+
+    if (uuid.isEmpty) {
+      ToastHelper.showCoolErrorToast(
+          title: "Lift not selected", message: "Please set lift first!");
+    } else {
+      AppDialog.dialogLoadingCircle();
+      if (!state.isLoading) {
+        state = state.loading;
+        notifyListeners();
+      }
+      final result = await _service.login(
+        cardId: idCard,
+        cargoUuid: uuid,
+      );
+      AppDialog.dismissAllDialog();
+
+      result.fold(
+        (l) {
+          failure = l;
+          AppDialog.dismissAllDialog();
+          AppDialog.toastError(l.errorMessage, longDuration: true);
+          state = state.failed;
+          notifyListeners();
+        },
+        (data) {
+          // assign ke variable provider
+          user = UserModel.fromMap(data['DATA']);
+          token = data['TOKEN'];
+          // save to cache
+          _sharedPref.saveUser(jsonEncode((data['DATA'])) );
+          _sharedPref.saveToken((data['TOKEN'].toString()));
+          AppDialog.dismissAllDialog();
+          //change state
+          state = state.loaded;
+          notifyListeners();
+
+          BuildContext? context = navigatorKey.currentState?.context;
+          if (context != null) {
+            context.go(AppRouteConst.home); // push ke halaman home
+          }
+        },
+      );
     }
-    final result = await _service.login(
-      cardId: idCard,
-      cargoUuid: uuid,
-    );
-
-    result.fold(
-      (l) {
-        failure = l;
-        AppDialog.toastError(l.errorMessage, longDuration: true);
-        AppDialog.dismissAllDialog();
-        state = state.failed;
-        notifyListeners();
-      },
-      (data) {
-        // assign ke variable provider
-        user = UserModel.fromMap(data['DATA']);
-        token = data['TOKEN'];
-        // save to cache
-        _sharedPref.saveUser((data['DATA'].toString()));
-        _sharedPref.saveToken((data['TOKEN'].toString()));
-        AppDialog.dismissAllDialog();
-        //change state
-        state = state.loaded;
-        notifyListeners();
-
-        BuildContext? context = navigatorKey.currentState?.context;
-        if (context != null) {
-          context.go(AppRouteConst.home); // push ke halaman home
-        }
-      },
-    );
   }
 }
