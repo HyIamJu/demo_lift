@@ -1,8 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
+import '../views/dialogs/error_dialog.dart';
 import '../constants/app_route_const.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
@@ -61,12 +60,16 @@ class AuthProvider extends ChangeNotifier {
         cargoUuid: uuid,
       );
       AppDialog.dismissAllDialog();
-
+      BuildContext? context = navigatorKey.currentState?.context;
       result.fold(
-        (l) {
+        (l) async {
           failure = l;
           AppDialog.dismissAllDialog();
-          AppDialog.toastError(l.errorMessage, longDuration: true);
+          // AppDialog.toastError(l.errorMessage, longDuration: true);
+          if (context != null) {
+              await showErrorDialog(context,
+                  title: l.message, desc: "", miliseconds: 2000);
+          }
           state = state.failed;
           notifyListeners();
         },
@@ -82,7 +85,6 @@ class AuthProvider extends ChangeNotifier {
           state = state.loaded;
           notifyListeners();
 
-          BuildContext? context = navigatorKey.currentState?.context;
           if (context != null) {
             context.go(AppRouteConst.home); // push ke halaman home
           }
@@ -94,6 +96,7 @@ class AuthProvider extends ChangeNotifier {
   Future<bool> loginWithoutNavigation(String idCard) async {
     String uuid = _sharedPref.readSelectedLift;
     bool isSuccess = false;
+
     if (uuid.isEmpty) {
       ToastHelper.showCoolErrorToast(
           title: "Lift not selected", message: "Please set lift first!");
@@ -108,13 +111,17 @@ class AuthProvider extends ChangeNotifier {
         cargoUuid: uuid,
       );
       AppDialog.dismissAllDialog();
-
+      BuildContext? context = navigatorKey.currentState?.context;
       result.fold(
-        (l) {
+        (l) async {
+          AppDialog.dismissAllDialog();
           isSuccess = false;
           failure = l;
-          AppDialog.dismissAllDialog();
-          AppDialog.toastError(l.errorMessage, longDuration: true);
+          // AppDialog.toastError(l.errorMessage, longDuration: true);
+          if (context != null) {
+            await showErrorDialog(context,
+                title: l.message, desc: "", miliseconds: 2000);
+          }
           state = state.failed;
           notifyListeners();
         },
