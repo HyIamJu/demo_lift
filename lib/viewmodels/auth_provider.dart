@@ -67,8 +67,8 @@ class AuthProvider extends ChangeNotifier {
           AppDialog.dismissAllDialog();
           // AppDialog.toastError(l.errorMessage, longDuration: true);
           if (context != null) {
-              await showErrorDialog(context,
-                  title: l.message, desc: "", miliseconds: 2000);
+            await showErrorDialog(context,
+                title: l.message, desc: "", miliseconds: 2000);
           }
           state = state.failed;
           notifyListeners();
