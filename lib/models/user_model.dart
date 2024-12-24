@@ -10,7 +10,7 @@ String userToMap(UserModel data) => json.encode(data.toMap());
 
 class UserModel {
     int? cargoLiftUserId;
-    int? employeeBadge;
+    String? employeeBadge;
     String? employeeName;
     String? departmentCode;
     String? departmentName;
@@ -35,7 +35,7 @@ class UserModel {
 
     UserModel copyWith({
         int? cargoLiftUserId,
-        int? employeeBadge,
+        String? employeeBadge,
         String? employeeName,
         String? departmentCode,
         String? departmentName,
