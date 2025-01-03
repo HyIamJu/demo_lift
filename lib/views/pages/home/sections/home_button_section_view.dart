@@ -28,9 +28,8 @@ class HomeButtonSectionView extends StatelessWidget {
   Widget build(BuildContext context) {
     var providerLog = context.read<CargoLiftLogsProvider>();
     var providerDetail = context.read<LiftCargoDetailProvider>();
-
+    
     var nfcController = context.read<NFCProvider>();
-    var authProv = context.read<AuthProvider>();
     final FocusNode focusNode = FocusNode();
 
     return Expanded(
@@ -39,11 +38,14 @@ class HomeButtonSectionView extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: _borderStyle,
         child:
-            Consumer<LiftActionProvider>(builder: (context, liftControler, _) {
+            Consumer2<LiftActionProvider, AuthProvider>(builder: (context, liftControler, authControler, _) {
           return KeyboardListener(
             focusNode: focusNode,
             autofocus: true,
-            onKeyEvent: (event) {
+            onKeyEvent:
+            authControler.state .isLoading ?
+            null :
+             (event) {
               if (event is KeyDownEvent) {
                 // Tangkap karakter yang diinput
                 final String key = event.logicalKey.keyLabel;
@@ -57,7 +59,7 @@ class HomeButtonSectionView extends StatelessWidget {
                   nfcController.processScannedData(
                     (scannedCard) async {
                       if (scannedCard.isNotEmpty && scannedCard.length > 4) {
-                        await authProv.loginWithoutNavigation(scannedCard).then(
+                        await authControler.loginWithoutNavigation(scannedCard).then(
                           (isSucces) {
                             if (isSucces) {
                               liftControler.renewTimeStamp();

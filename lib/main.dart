@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -30,22 +32,26 @@ void main() async {
   // window manager setup
   // ----------------------------------------------
 
-  // Inisialisasi window manager
-  await windowManager.ensureInitialized();
+  if (Platform.isLinux || Platform.isWindows) {
+    // Android-specific code
+    // Inisialisasi window manager
+    await windowManager.ensureInitialized();
 
-  // Set window options
-  WindowOptions windowOptions = const WindowOptions(
-    size: Size(1920, 1080), // Ukuran layar penuh
-    center: true,
-    backgroundColor: Colors.transparent,
-    title: 'Kiosk Mode',
-    fullScreen: true,
-  );
+    // Set window options
+    WindowOptions windowOptions = const WindowOptions(
+      size: Size(1920, 1080), // Ukuran layar penuh
+      center: true,
+      backgroundColor: Colors.transparent,
+      title: 'Kiosk Mode',
+      fullScreen: true,
+    );
 
-  windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.setFullScreen(true); // Paksa fullscreen
-    await windowManager.setAlwaysOnTop(true); // Pastikan selalu di atas
-    await windowManager.show();
-  });
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.setFullScreen(true); // Paksa fullscreen
+      await windowManager.setAlwaysOnTop(true); // Pastikan selalu di atas
+      await windowManager.show();
+    });
+  }
+
   runApp(MyApp());
 }
