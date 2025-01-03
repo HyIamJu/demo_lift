@@ -1,32 +1,77 @@
-# lift_demo
 
-A new Flutter project.
+# Raspberry Pi Flutter Setup Guide
 
-## Getting Started
+## 1. Install `snapp_installer` on Raspberry Pi
 
-This project is a starting point for a Flutter application.
+- Ensure the Flutter version matches **3.22.3** on the Raspberry Pi.
 
-A few resources to get you started if this is your first Flutter project:
+## 2. Configure Laptop for Running Raspberry Pi Device
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+1. If Snapp CLI can't run or activate:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+   ```bash
+   dart pub global activate snapp_cli
+   ```
 
-di ras pi nya pake snapp_installer  terus cocokin versi flutter juga sekarang pake : 3.22.3
+2. Add devices:
 
-di laptop yang mau nge run device nya :
-"dart pub global activate snapp_cli"
-"lalu add devices terus tambahkan konfig yang di minta"
+   ```bash
+   snapp_cli add device
+   ```
 
-cara cek devices yang ada di flutter kita  :
-"flutter devices"
-run nya lgsg aja pake nama device nya
-"flutter run -d pi-4b"
+   - Follow the prompts to add the required configuration.
 
-kalau run di minta acces karena minta password ssh nya kita harus konfig run nya :
- ketik "ssh-copy-id erilsan@192.168.225.114"
-baru tes lagi ke ssh harusnya dia ga perlu ketik password lagi.
- ketik "ssh erilsan@192.168.225.114"
+3. Check connected devices:
+
+   ```bash
+   flutter devices
+   ```
+
+4. Run the application using the device name:
+
+   ```bash
+   flutter run -d pi-4b
+   ```
+
+## 3. SSH Passwordless Configuration
+
+If SSH access prompts for a password, configure passwordless SSH:
+
+1. Copy SSH key to the Raspberry Pi:
+
+   ```bash
+   ssh-copy-id user@192.168.xxx.xxx
+   ```
+
+2. Test SSH connection:
+
+   ```bash
+   ssh user@192.168.xxx.xxx
+   ```
+
+   - After configuration, SSH should no longer require a password because we already Copy SSH key to the Raspberry Pi.
+
+## 4. Connect Wi-Fi via Terminal
+
+1. Check the status of network devices:
+
+   ```bash
+   nmcli dev status
+   ```
+
+2. Connect to a Wi-Fi network:
+
+   ```bash
+   sudo nmcli dev wifi connect "SSID" password "PASSWORD"
+   ```
+
+## 5. Disable Ethernet
+
+1. Identify the Ethernet interface (usually named `eth0`).
+2. Disable Ethernet:
+
+   ```bash
+   sudo ifconfig eth0 down
+   ```
+
+> Replace `eth0` with the appropriate Ethernet interface name if different.
