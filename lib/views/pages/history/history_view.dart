@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
@@ -173,6 +174,7 @@ Widget _headerTable(BuildContext context) {
   );
 }
 
+
 Widget _dataTable(BuildContext context) {
   return Consumer<CargoLiftLogsProvider>(
     builder: (context, logProvider, _) {
@@ -199,30 +201,38 @@ Widget _dataTable(BuildContext context) {
         }
 
         return Expanded(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Table(
-              border: const TableBorder(
-                horizontalInside: BorderSide.none,
-                verticalInside: BorderSide.none,
-                bottom: BorderSide.none,
-              ),
-              columnWidths: {
-                0: FixedColumnWidth(context.fullWidth * 0.04),
-                1: FixedColumnWidth(context.fullWidth * 0.53),
-                2: FixedColumnWidth(context.fullWidth * 0.1),
-                3: FixedColumnWidth(context.fullWidth * 0.12),
+          child: ScrollConfiguration(
+            behavior: ScrollConfiguration.of(context).copyWith(
+              dragDevices: {
+                PointerDeviceKind.touch,
+                PointerDeviceKind.mouse,
               },
-              children: [
-                // ----------------------------------------------
-                // DATA TABEL
-                // ----------------------------------------------
-
-                for (var i = 0; i < historyLogs.length; i++)
-                  tableRowData(no: "${i + 1}", data: historyLogs.elementAt(i))
-
-                // tableRowData(),
-              ],
+            ),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Table(
+                border: const TableBorder(
+                  horizontalInside: BorderSide.none,
+                  verticalInside: BorderSide.none,
+                  bottom: BorderSide.none,
+                ),
+                columnWidths: {
+                  0: FixedColumnWidth(context.fullWidth * 0.04),
+                  1: FixedColumnWidth(context.fullWidth * 0.53),
+                  2: FixedColumnWidth(context.fullWidth * 0.1),
+                  3: FixedColumnWidth(context.fullWidth * 0.12),
+                },
+                children: [
+                  // ----------------------------------------------
+                  // DATA TABEL
+                  // ----------------------------------------------
+            
+                  for (var i = 0; i < historyLogs.length; i++)
+                    tableRowData(no: "${i + 1}", data: historyLogs.elementAt(i))
+            
+                  // tableRowData(),
+                ],
+              ),
             ),
           ),
         );
